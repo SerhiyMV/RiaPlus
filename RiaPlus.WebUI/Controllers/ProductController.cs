@@ -1,0 +1,40 @@
+﻿using System.Linq;
+using System.Web.Mvc;
+using RiaPlus.Domain.Abstract;
+using RiaPlus.WebUI.Models;
+
+namespace RiaPlus.WebUI.Controllers
+{
+    public class ProductController : Controller
+    {
+        private IProductsRepository repository;
+        public int PageSize = 3;
+        
+        public ProductController(IProductsRepository productRepository)
+        {
+            this.repository = productRepository;
+        }
+
+        public ViewResult List(string category, int page =1)
+        {
+            ProductsListViewModel model = new ProductsListViewModel
+            {
+                Products = repository.Products.
+                    Where(p => category == null || p.Category == category).
+                    OrderBy(p => p.ProductID).
+                    Skip((page - 1) * PageSize).
+                    Take(PageSize),
+                PagingInfo = new PagingInfo
+                {
+                    CurrentPage = page,
+                    ItemsPerPage = PageSize,
+                    TotalItems = category == null ?
+                    repository.Products.Count() :
+                    repository.Products.Count(e => e.Category == category)
+                },
+                CurrentCategory = category
+            };
+            return View(model);
+        }
+    }
+}

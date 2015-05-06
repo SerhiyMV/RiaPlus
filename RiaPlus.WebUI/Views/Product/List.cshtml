@@ -1,0 +1,15 @@
+﻿@model RiaPlus.WebUI.Models.ProductsListViewModel
+
+@{
+    ViewBag.Title = "Cars store";
+}
+
+@foreach (var p in Model.Products)
+{
+    Html.RenderPartial("ProductSummary", p);
+}
+
+<div class="pager">
+    @Html.PageLinks(Model.PagingInfo,x=>Url.Action
+        ("List", new {Page=x,category = Model.CurrentCategory}))
+</div>
